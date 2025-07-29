@@ -1,12 +1,13 @@
-name: Deploy ASG Environment
+name: Deploy Environment
 
 on:
   workflow_dispatch:
     inputs:
       environment:
-        description: "Select environment to deploy"
+        description: "Choose environment to deploy"
         required: true
         type: choice
+        default: dev
         options:
           - dev
           - qa
@@ -17,7 +18,7 @@ env:
   TF_VAR_environment: ${{ github.event.inputs.environment }}
 
 jobs:
-  terraform:
+  deploy:
     runs-on: ubuntu-latest
 
     defaults:
@@ -25,13 +26,13 @@ jobs:
         working-directory: environments/${{ github.event.inputs.environment }}
 
     steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
+      - name: Checkout Repository
+        uses: actions/checkout@v3
 
       - name: Set up Terraform
         uses: hashicorp/setup-terraform@v3
         with:
-          terraform_version: 1.6.0
+          terraform_version: 1.5.0
 
       - name: Terraform Init
         run: terraform init
@@ -42,4 +43,4 @@ jobs:
       - name: Terraform Apply
         run: terraform apply -auto-approve
 
-       
+      
